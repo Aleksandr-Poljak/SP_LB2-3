@@ -55,7 +55,7 @@ void CreateUserThread(ThreadParams thParams)
 
     // Сообщение об успешном создании потока
     std::wstring msg = L"Thread is " + std::to_wstring(thParams.Num) + L" created.";
-    MessageBox(thParams.hWnd, msg.c_str(), L"Info", MB_OK);
+    //MessageBox(thParams.hWnd, msg.c_str(), L"Info", MB_OK);
 }
 
 void DestroyUserThread(ThreadParams thParams, bool quietMode)

@@ -101,11 +101,12 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
-   hmtx = CreateMutex(NULL,FALSE, NULL);
+   hmtx = CreateMutex(NULL, FALSE, L"Global\\RunningLineMutex");
    if (hmtx == NULL)
    {
        DWORD dwError = GetLastError();
        MessageBox(NULL, L"Failed to create mutex", L"Error", MB_OK | MB_ICONERROR);
+       return FALSE;
    }
 
    HMENU hMenu = GetMenu(hWnd);
