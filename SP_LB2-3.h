@@ -53,4 +53,8 @@ void StartAnimation(HWND hWnd);
 // Остановка анимации
 void StopAnimation();
 
+// Sync threads/
+extern HANDLE hmtx;
+extern  BOOL g_bSyncnEnabled;
+
 

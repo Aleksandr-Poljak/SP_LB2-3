@@ -17,6 +17,9 @@ DWORD dwSecThreadId[3] = { 0, 0, 0 };                  //Идентификат�
 bool g_bStopAnimation = false;
 HANDLE hAnimationThread = nullptr;
 
+// Sync threads
+HANDLE hmtx = nullptr;
+BOOL g_bSyncnEnabled = false;
 
 
 
@@ -97,6 +100,13 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
+
+   hmtx = CreateMutex(NULL,FALSE, NULL);
+   if (hmtx == NULL)
+   {
+       DWORD dwError = GetLastError();
+       MessageBox(NULL, L"Failed to create mutex", L"Error", MB_OK | MB_ICONERROR);
+   }
 
    HMENU hMenu = GetMenu(hWnd);
    ControlMenu(hMenu);
@@ -271,6 +281,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 InvalidateRect(hWnd, NULL, TRUE);
                 break;
             }
+            // Sync threads.
+            case ID_SYNC_ON:
+            {
+                g_bSyncnEnabled = TRUE;
+                break;
+            }
+            case ID_SYNC_OFF:
+            {
+                g_bSyncnEnabled = FALSE;
+                break;
+            }
 
             case IDM_ABOUT:
                 DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
@@ -299,6 +320,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         DestroyUserThread(threadParams1, TRUE);
         DestroyUserThread(threadParams1, TRUE);
         DestroyUserThread(threadParams2, TRUE);
+        StopAnimation();
         PostQuitMessage(0);
         break;
     }

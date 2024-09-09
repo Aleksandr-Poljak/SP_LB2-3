@@ -32,6 +32,11 @@
 #define ID_THREAD2_DECREASE_PRIORITY    32789
 #define ID_ANIMATION_START              32790
 #define ID_ANIMATION_DESTROY            32791
+#define ID_SYNCHRONIZATION_ENABLECOORDINATION 32792
+#define ID_SYNCHRONIZATION_DISABLECOORDINATION 32793
+#define ID_SYNCHRONIZATION_ENABLECOORDINATION32794 32794
+#define ID_SYNC_ON                      32795
+#define ID_SYNC_OFF                     32796
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -40,7 +45,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        129
-#define _APS_NEXT_COMMAND_VALUE         32792
+#define _APS_NEXT_COMMAND_VALUE         32797
 #define _APS_NEXT_CONTROL_VALUE         1000
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
