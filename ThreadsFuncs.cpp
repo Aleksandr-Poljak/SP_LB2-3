@@ -8,7 +8,6 @@ const int LINE_HEIGHT = 20; // Высота строки, которую вы хотите отобразить
 //Functions for threads
 DWORD WINAPI RunningLine(LPVOID lpParam)
 {
-    // Преобразуем переданные параметры в структуру
     ThreadParams* pParams = (ThreadParams*)lpParam;
 
     HWND hWnd = pParams->hWnd;
@@ -18,7 +17,7 @@ DWORD WINAPI RunningLine(LPVOID lpParam)
 
     HDC hdc;
     RECT rect;
-    std::wstring text = L"Secondary thread created by Polyak A.A. Thread number " + std::to_wstring(threadNum);
+    std::wstring text = L"Вторичный поток создан Polyak A.A. Номер потока " + std::to_wstring(threadNum);
     int textLength = text.length();
     SIZE textSize;
     int textWidth;
@@ -26,40 +25,50 @@ DWORD WINAPI RunningLine(LPVOID lpParam)
     // Получаем клиентскую область
     GetClientRect(hWnd, &rect);
 
-    // Определяем шрифт
     HFONT hFont = (HFONT)SendMessage(hWnd, WM_GETFONT, 0, 0);
     HDC hdcMem = CreateCompatibleDC(NULL);
     SelectObject(hdcMem, hFont);
 
-    while (true)
+    while (true)  // Бесконечный цикл для постоянного движения строки
     {
         hdc = GetDC(hWnd);
-
-        // Измеряем текст
         GetTextExtentPoint32(hdc, text.c_str(), textLength, &textSize);
         textWidth = textSize.cx;
 
-        // Очистка области перед новой отрисовкой
-        RECT updateRect = { 0, yPos, rect.right, yPos + 20 };
-        InvalidateRect(hWnd, &updateRect, TRUE);
-        UpdateWindow(hWnd);
-
-        // Отрисовка текста
-        TextOut(hdc, xPos, yPos, text.c_str(), textLength);
-
-        // Обновляем позицию текста
-        xPos += 5;
-
-        // Если текст вышел за пределы экрана, сбрасываем позицию
-        if (xPos >= rect.right)
+        // Если синхронизация включена, ждем мьютекса
+        if (g_bSyncnEnabled)
         {
-            xPos = -textWidth;
+            WaitForSingleObject(hmtx, INFINITE);
         }
 
-        Sleep(100); // Задержка для скорости бегущей строки
+        // Два полных прохода строки
+        for (int i = 0; i < 2; i++)
+        {
+            xPos = -textWidth;  // Сбрасываем начальную позицию на левый край (за пределы окна)
+
+            while (xPos < rect.right)  // Пока текст не выйдет за правый край окна
+            {
+                // Очищаем только область текущей строки перед новой отрисовкой
+                RECT updateRect = { 0, yPos, rect.right, yPos + LINE_HEIGHT };
+                InvalidateRect(hWnd, &updateRect, TRUE);
+                UpdateWindow(hWnd);
+
+                // Рисуем строку
+                TextOut(hdc, xPos, yPos, text.c_str(), textLength);
+
+                xPos += 5;  // Шаг движения строки
+                Sleep(50);  // Задержка для плавного движения строки
+            }
+        }
+
+        // Если синхронизация включена, освобождаем мьютекс после двух полных проходов
+        if (g_bSyncnEnabled)
+        {
+            ReleaseMutex(hmtx);
+        }
 
         // Проверка на закрытие окна
-        if (IsWindow(hWnd) == FALSE)
+        if (!IsWindow(hWnd))
         {
             break;
         }
@@ -68,7 +77,5 @@ DWORD WINAPI RunningLine(LPVOID lpParam)
     }
 
     DeleteDC(hdcMem);
-
     return 0;
 }
-
