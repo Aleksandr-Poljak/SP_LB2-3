@@ -17,7 +17,4 @@ The application outputs "ticker lines" using synchronized threads. When multiple
 - Mutex guarantees atomic execution, preventing race conditions.
 
 #
-![Ticker Line Animation](https://github.com/ваш_репозиторий/assets/ticker_lines_animation.gif)
-
-
-
+<img src="https://github.com/user-attachments/assets/45465604-8b51-42ee-8990-3aa3c2d4d2e6" alt="sync_threads1" width="500" height="500">
